@@ -41,33 +41,44 @@ class ImageRecognitionService: ObservableObject {
         }
         
         // Perform multiple recognition tasks
-        performObjectRecognition(on: cgImage)
-        performTextRecognition(on: cgImage)
+        let group = DispatchGroup()
+        
+        group.enter()
+        performObjectRecognition(on: cgImage) {
+            group.leave()
+        }
+        
+        group.enter()
+        performTextRecognition(on: cgImage) {
+            group.leave()
+        }
+        
+        group.notify(queue: .main) {
+            self.isProcessing = false
+        }
     }
     
-    private func performObjectRecognition(on image: CGImage) {
-        let request = VNRecognizeObjectsRequest { [weak self] request, error in
+    private func performObjectRecognition(on image: CGImage, completion: @escaping () -> Void) {
+        // Use VNClassifyImageRequest instead of VNRecognizeObjectsRequest
+        let request = VNClassifyImageRequest { [weak self] request, error in
             DispatchQueue.main.async {
                 if let error = error {
                     self?.errorMessage = "Object recognition failed: \(error.localizedDescription)"
                     return
                 }
                 
-                guard let results = request.results as? [VNRecognizedObjectObservation] else { return }
+                guard let results = request.results as? [VNClassificationObservation] else { return }
                 
                 for observation in results {
-                    // Get the top classification
-                    guard let topClassification = observation.labels.first else { continue }
-                    
-                    let confidence = topClassification.confidence
-                    let label = topClassification.identifier.lowercased()
+                    let confidence = observation.confidence
+                    let label = observation.identifier.lowercased()
                     
                     // Filter for food-related objects
                     if self?.isFoodRelated(label) == true && confidence > 0.5 {
                         let detectedIngredient = DetectedIngredient(
                             name: self?.normalizeIngredientName(label) ?? label,
                             confidence: confidence,
-                            boundingBox: observation.boundingBox,
+                            boundingBox: CGRect.zero, // VNClassifyImageRequest doesn't provide bounding boxes
                             detectionType: .object
                         )
                         
@@ -76,10 +87,6 @@ class ImageRecognitionService: ObservableObject {
                 }
             }
         }
-        
-        // Configure the request
-        request.recognitionLevel = .accurate
-        request.usesCPUOnly = false
         
         // Create and perform the request
         let handler = VNImageRequestHandler(cgImage: image, options: [:])
@@ -92,10 +99,11 @@ class ImageRecognitionService: ObservableObject {
                     self.errorMessage = "Failed to perform object recognition: \(error.localizedDescription)"
                 }
             }
+            completion()
         }
     }
     
-    private func performTextRecognition(on image: CGImage) {
+    private func performTextRecognition(on image: CGImage, completion: @escaping () -> Void) {
         let request = VNRecognizeTextRequest { [weak self] request, error in
             DispatchQueue.main.async {
                 if let error = error {
@@ -144,6 +152,7 @@ class ImageRecognitionService: ObservableObject {
                     self.errorMessage = "Failed to perform text recognition: \(error.localizedDescription)"
                 }
             }
+            completion()
         }
     }
     
@@ -219,9 +228,4 @@ struct DetectedIngredient: Identifiable {
     }
 }
 
-// MARK: - Vision Framework Extensions
-extension VNRecognizedTextObservation {
-    func topCandidates(_ count: Int) -> [VNRecognizedText] {
-        return self.topCandidates(count)
-    }
-} 
+ 
