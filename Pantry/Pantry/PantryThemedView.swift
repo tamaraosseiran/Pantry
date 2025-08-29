@@ -36,10 +36,8 @@ struct PantryThemedView: View {
                 pantryBackground
                 
                 VStack(spacing: 0) {
-                    // Search and Filter Bar - only show when there are available ingredients
-                    if !ingredients.filter({ !$0.isUsed }).isEmpty {
-                        searchAndFilterSection
-                    }
+                    // Search and Filter Bar - always show the container, but conditionally show content
+                    searchAndFilterSection
                     
                     // Pantry shelves
                     pantryContent
@@ -67,9 +65,11 @@ struct PantryThemedView: View {
     
     private var searchAndFilterSection: some View {
         VStack(spacing: 12) {
-            SearchBar(text: $searchText, placeholder: "Search ingredients...")
-            
-            categoryFilterScrollView
+            if !ingredients.filter({ !$0.isUsed }).isEmpty {
+                SearchBar(text: $searchText, placeholder: "Search ingredients...")
+                
+                categoryFilterScrollView
+            }
         }
         .padding(.horizontal)
         .padding(.top)
