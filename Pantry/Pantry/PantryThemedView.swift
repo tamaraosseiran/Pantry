@@ -36,8 +36,8 @@ struct PantryThemedView: View {
                 pantryBackground
                 
                 VStack(spacing: 0) {
-                    // Search and Filter Bar - only show when there are ingredients
-                    if !ingredients.isEmpty {
+                    // Search and Filter Bar - only show when there are available ingredients
+                    if !ingredients.filter({ !$0.isUsed }).isEmpty {
                         searchAndFilterSection
                     }
                     
