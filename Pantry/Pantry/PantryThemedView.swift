@@ -36,8 +36,10 @@ struct PantryThemedView: View {
                 pantryBackground
                 
                 VStack(spacing: 0) {
-                    // Search and Filter Bar
-                    searchAndFilterSection
+                    // Search and Filter Bar - only show when there are ingredients
+                    if !ingredients.isEmpty {
+                        searchAndFilterSection
+                    }
                     
                     // Pantry shelves
                     pantryContent
