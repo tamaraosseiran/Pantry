@@ -111,7 +111,7 @@ final class UserPreferences {
 }
 
 // MARK: - Enums
-enum IngredientCategory: String, CaseIterable, Codable {
+enum IngredientCategory: String, CaseIterable, Codable, Comparable {
     case vegetables = "Vegetables"
     case fruits = "Fruits"
     case meat = "Meat"
@@ -138,6 +138,11 @@ enum IngredientCategory: String, CaseIterable, Codable {
         case .canned: return "cylinder.fill"
         case .other: return "questionmark.circle.fill"
         }
+    }
+    
+    // MARK: - Comparable
+    static func < (lhs: IngredientCategory, rhs: IngredientCategory) -> Bool {
+        return lhs.rawValue < rhs.rawValue
     }
 }
 
