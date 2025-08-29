@@ -33,54 +33,14 @@ struct PantryThemedView: View {
         NavigationView {
             ZStack {
                 // Pantry background
-                Color(red: 0.95, green: 0.93, blue: 0.88) // Warm wood color
-                    .ignoresSafeArea()
+                pantryBackground
                 
                 VStack(spacing: 0) {
                     // Search and Filter Bar
-                    VStack(spacing: 12) {
-                        SearchBar(text: $searchText, placeholder: "Search ingredients...")
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                CategoryFilterButton(title: "All", isSelected: selectedCategory == nil) {
-                                    selectedCategory = nil
-                                }
-                                
-                                ForEach(IngredientCategory.allCases, id: \.self) { category in
-                                    CategoryFilterButton(
-                                        title: category.rawValue,
-                                        icon: category.icon,
-                                        isSelected: selectedCategory == category
-                                    ) {
-                                        selectedCategory = selectedCategory == category ? nil : category
-                                    }
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.top)
+                    searchAndFilterSection
                     
                     // Pantry shelves
-                    if filteredIngredients.isEmpty {
-                        EmptyPantryView()
-                    } else {
-                        ScrollView {
-                            LazyVStack(spacing: 20) {
-                                ForEach(groupedIngredients.keys.sorted(), id: \.self) { category in
-                                    if let categoryIngredients = groupedIngredients[category] {
-                                        PantryShelfView(
-                                            category: category,
-                                            ingredients: categoryIngredients
-                                        )
-                                    }
-                                }
-                            }
-                            .padding()
-                        }
-                    }
+                    pantryContent
                 }
             }
             .navigationTitle("My Pantry")
@@ -97,6 +57,69 @@ struct PantryThemedView: View {
         }
     }
     
+    // MARK: - Computed Views
+    private var pantryBackground: some View {
+        Color(red: 0.95, green: 0.93, blue: 0.88)
+            .ignoresSafeArea()
+    }
+    
+    private var searchAndFilterSection: some View {
+        VStack(spacing: 12) {
+            SearchBar(text: $searchText, placeholder: "Search ingredients...")
+            
+            categoryFilterScrollView
+        }
+        .padding(.horizontal)
+        .padding(.top)
+    }
+    
+    private var categoryFilterScrollView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                CategoryFilterButton(title: "All", isSelected: selectedCategory == nil) {
+                    selectedCategory = nil
+                }
+                
+                ForEach(IngredientCategory.allCases, id: \.self) { category in
+                    CategoryFilterButton(
+                        title: category.rawValue,
+                        icon: category.icon,
+                        isSelected: selectedCategory == category
+                    ) {
+                        selectedCategory = selectedCategory == category ? nil : category
+                    }
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+    
+    private var pantryContent: some View {
+        Group {
+            if filteredIngredients.isEmpty {
+                EmptyPantryView()
+            } else {
+                pantryShelvesView
+            }
+        }
+    }
+    
+    private var pantryShelvesView: some View {
+        ScrollView {
+            LazyVStack(spacing: 20) {
+                ForEach(groupedIngredients.keys.sorted(), id: \.self) { category in
+                    if let categoryIngredients = groupedIngredients[category] {
+                        PantryShelfView(
+                            category: category,
+                            ingredients: categoryIngredients
+                        )
+                    }
+                }
+            }
+            .padding()
+        }
+    }
+    
     private var groupedIngredients: [IngredientCategory: [Ingredient]] {
         Dictionary(grouping: filteredIngredients) { $0.category }
     }
@@ -108,43 +131,52 @@ struct PantryShelfView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Shelf label
-            HStack {
-                Text(category.rawValue)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.brown)
-                
-                Spacer()
-                
-                Text("\(ingredients.count) items")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(Color.white.opacity(0.8))
-            .cornerRadius(8, corners: [.topLeft, .topRight])
-            
-            // Shelf surface
-            Rectangle()
-                .fill(Color(red: 0.8, green: 0.7, blue: 0.5)) // Wooden shelf
-                .frame(height: 4)
-            
-            // Ingredients on shelf
-            LazyVGrid(columns: [
-                GridItem(.adaptive(minimum: 100, maximum: 120), spacing: 12)
-            ], spacing: 12) {
-                ForEach(ingredients) { ingredient in
-                    PantryItemView(ingredient: ingredient)
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(Color.white.opacity(0.6))
-            .cornerRadius(8, corners: [.bottomLeft, .bottomRight])
+            shelfLabel
+            shelfSurface
+            ingredientsGrid
         }
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
+    }
+    
+    private var shelfLabel: some View {
+        HStack {
+            Text(category.rawValue)
+                .font(.headline)
+                .fontWeight(.semibold)
+                .foregroundColor(.brown)
+            
+            Spacer()
+            
+            Text("\(ingredients.count) items")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(Color.white.opacity(0.8))
+        .cornerRadius(8, corners: [.topLeft, .topRight])
+    }
+    
+    private var shelfSurface: some View {
+        Rectangle()
+            .fill(Color(red: 0.8, green: 0.7, blue: 0.5))
+            .frame(height: 4)
+    }
+    
+    private var ingredientsGrid: some View {
+        LazyVGrid(columns: gridColumns, spacing: 12) {
+            ForEach(ingredients) { ingredient in
+                PantryItemView(ingredient: ingredient)
+            }
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(Color.white.opacity(0.6))
+        .cornerRadius(8, corners: [.bottomLeft, .bottomRight])
+    }
+    
+    private var gridColumns: [GridItem] {
+        [GridItem(.adaptive(minimum: 100, maximum: 120), spacing: 12)]
     }
 }
 
@@ -156,41 +188,49 @@ struct PantryItemView: View {
     var body: some View {
         Button(action: { showingEditSheet = true }) {
             VStack(spacing: 8) {
-                // Container with emoji
-                ZStack {
-                    // Container background
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(containerColor)
-                        .frame(width: 80, height: 80)
-                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
-                    
-                    // Emoji
-                    Text(ingredientEmoji)
-                        .font(.system(size: 32))
-                }
-                
-                // Ingredient name
-                Text(ingredient.name)
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .foregroundColor(.primary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
-                
-                // Quantity
-                Text("\(ingredient.quantity, specifier: "%.1f") \(ingredient.unit)")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                
-                // Expiry indicator
-                if let expiryDate = ingredient.expiryDate {
-                    ExpiryIndicator(date: expiryDate)
-                }
+                emojiContainer
+                ingredientName
+                quantityText
+                expiryIndicator
             }
         }
         .buttonStyle(PlainButtonStyle())
         .sheet(isPresented: $showingEditSheet) {
             EditIngredientView(ingredient: ingredient)
+        }
+    }
+    
+    private var emojiContainer: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(containerColor)
+                .frame(width: 80, height: 80)
+                .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: 1)
+            
+            Text(ingredientEmoji)
+                .font(.system(size: 32))
+        }
+    }
+    
+    private var ingredientName: some View {
+        Text(ingredient.name)
+            .font(.caption)
+            .fontWeight(.medium)
+            .foregroundColor(.primary)
+            .lineLimit(2)
+            .multilineTextAlignment(.center)
+    }
+    
+    private var quantityText: some View {
+        Text("\(ingredient.quantity, specifier: "%.1f") \(ingredient.unit)")
+            .font(.caption2)
+            .foregroundColor(.secondary)
+    }
+    
+    @ViewBuilder
+    private var expiryIndicator: some View {
+        if let expiryDate = ingredient.expiryDate {
+            ExpiryIndicator(date: expiryDate)
         }
     }
     
