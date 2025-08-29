@@ -26,9 +26,9 @@ struct MainTabView: View {
                     Label("Recipes", systemImage: "book.closed")
                 }
             
-            CameraView()
+            EnhancedCameraView()
                 .tabItem {
-                    Label("Scan", systemImage: "camera")
+                    Label("AI Scan", systemImage: "camera")
                 }
             
             ProfileView()
