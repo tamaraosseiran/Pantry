@@ -36,8 +36,10 @@ struct PantryThemedView: View {
                 pantryBackground
                 
                 VStack(spacing: 0) {
-                    // Search and Filter Bar - always show the container, but conditionally show content
-                    searchAndFilterSection
+                    // Search and Filter Bar - only show when there are available ingredients
+                    if !ingredients.filter({ !$0.isUsed }).isEmpty {
+                        searchAndFilterSection
+                    }
                     
                     // Pantry shelves
                     pantryContent
@@ -46,8 +48,22 @@ struct PantryThemedView: View {
             .navigationTitle("My Pantry")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingAddIngredient = true }) {
-                        Image(systemName: "plus")
+                    HStack {
+                        // Temporary button to clear all ingredients for testing
+                        if !ingredients.isEmpty {
+                            Button(action: {
+                                for ingredient in ingredients {
+                                    modelContext.delete(ingredient)
+                                }
+                            }) {
+                                Image(systemName: "trash")
+                                    .foregroundColor(.red)
+                            }
+                        }
+                        
+                        Button(action: { showingAddIngredient = true }) {
+                            Image(systemName: "plus")
+                        }
                     }
                 }
             }
@@ -65,11 +81,9 @@ struct PantryThemedView: View {
     
     private var searchAndFilterSection: some View {
         VStack(spacing: 12) {
-            if !ingredients.filter({ !$0.isUsed }).isEmpty {
-                SearchBar(text: $searchText, placeholder: "Search ingredients...")
-                
-                categoryFilterScrollView
-            }
+            SearchBar(text: $searchText, placeholder: "Search ingredients...")
+            
+            categoryFilterScrollView
         }
         .padding(.horizontal)
         .padding(.top)
