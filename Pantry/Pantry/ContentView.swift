@@ -16,7 +16,7 @@ struct MainTabView: View {
     
     var body: some View {
         TabView {
-            PantryView()
+            PantryThemedView()
                 .tabItem {
                     Label("Pantry", systemImage: "cabinet")
                 }

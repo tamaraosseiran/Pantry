@@ -19,8 +19,7 @@ struct EditIngredientView: View {
     @State private var expiryDate: Date
     @State private var hasExpiryDate: Bool
     @State private var notes: String
-    @State private var showingImagePicker = false
-    @State private var ingredientImage: UIImage?
+    @State private var selectedEmoji = "🥬"
     
     private let units = ["piece", "pieces", "gram", "grams", "kg", "ounce", "ounces", "cup", "cups", "tablespoon", "tablespoons", "teaspoon", "teaspoons", "ml", "liter", "liters"]
     
@@ -34,9 +33,20 @@ struct EditIngredientView: View {
         self._hasExpiryDate = State(initialValue: ingredient.expiryDate != nil)
         self._notes = State(initialValue: ingredient.notes ?? "")
         
-        // Load existing image if available
-        if let imageData = ingredient.imageData {
-            self._ingredientImage = State(initialValue: UIImage(data: imageData))
+        // Load existing emoji if available (we'll extract it from the image data later)
+        // For now, set a default based on category
+        switch ingredient.category {
+        case .vegetables: self._selectedEmoji = State(initialValue: "🥬")
+        case .fruits: self._selectedEmoji = State(initialValue: "🍎")
+        case .meat: self._selectedEmoji = State(initialValue: "🥩")
+        case .dairy: self._selectedEmoji = State(initialValue: "🥛")
+        case .grains: self._selectedEmoji = State(initialValue: "🌾")
+        case .spices: self._selectedEmoji = State(initialValue: "🧂")
+        case .condiments: self._selectedEmoji = State(initialValue: "🫒")
+        case .beverages: self._selectedEmoji = State(initialValue: "🥤")
+        case .frozen: self._selectedEmoji = State(initialValue: "🧊")
+        case .canned: self._selectedEmoji = State(initialValue: "🥫")
+        case .other: self._selectedEmoji = State(initialValue: "📦")
         }
     }
     
@@ -46,35 +56,13 @@ struct EditIngredientView: View {
                 Section("Ingredient Details") {
                     TextField("Ingredient name", text: $name)
                     
-                    // Ingredient Image
+                    // Ingredient Emoji
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Ingredient Photo")
+                        Text("Choose Emoji")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                         
-                        Button(action: { showingImagePicker = true }) {
-                            if let image = ingredientImage {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(height: 120)
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                                    )
-                            } else {
-                                HStack {
-                                    Image(systemName: "camera.fill")
-                                    Text("Add Photo")
-                                }
-                                .foregroundColor(.blue)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.blue.opacity(0.1))
-                                .cornerRadius(12)
-                            }
-                        }
+                        EmojiPickerView(selectedEmoji: $selectedEmoji)
                     }
                     
                     HStack {
@@ -149,9 +137,7 @@ struct EditIngredientView: View {
                     .disabled(name.isEmpty)
                 }
             }
-            .sheet(isPresented: $showingImagePicker) {
-                ImagePicker(image: $ingredientImage, sourceType: .photoLibrary)
-            }
+
         }
     }
     
@@ -163,8 +149,9 @@ struct EditIngredientView: View {
         ingredient.expiryDate = hasExpiryDate ? expiryDate : nil
         ingredient.notes = notes.isEmpty ? nil : notes
         
-        // Save image data if available
-        if let image = ingredientImage, let imageData = image.jpegData(compressionQuality: 0.8) {
+        // Save emoji as image data
+        if let emojiImage = selectedEmoji.image(size: CGSize(width: 100, height: 100)),
+           let imageData = emojiImage.pngData() {
             ingredient.imageData = imageData
         }
         

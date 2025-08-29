@@ -55,10 +55,10 @@ struct IngredientRowView: View {
                 
                 Spacer()
                 
-                // Chevron for edit indication
-                Image(systemName: "chevron.right")
+                // Edit indicator (subtle)
+                Image(systemName: "pencil.circle")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.blue.opacity(0.6))
             }
             .padding(.vertical, 8)
         }
