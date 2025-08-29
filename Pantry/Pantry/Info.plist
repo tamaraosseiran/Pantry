@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Pantry needs camera access to scan ingredients from your fridge and pantry</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Pantry needs photo library access to select ingredient images</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Pantry needs microphone access for voice input when adding ingredients</string>
+</dict>
+</plist>
