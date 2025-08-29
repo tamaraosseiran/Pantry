@@ -21,7 +21,13 @@ struct PantryApp: App {
             RecipeIngredient.self,
             UserPreferences.self,
         ])
+        
+        // Use different configuration for preview vs production
+        #if DEBUG
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        #else
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false, cloudKitDatabase: .automatic)
+        #endif
 
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])
