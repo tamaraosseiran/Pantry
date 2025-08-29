@@ -20,6 +20,8 @@ struct AddIngredientView: View {
     @State private var hasExpiryDate = false
     @State private var notes = ""
     @State private var showingVoiceInput = false
+    @State private var showingImagePicker = false
+    @State private var ingredientImage: UIImage?
     
     private let units = ["piece", "pieces", "gram", "grams", "kg", "ounce", "ounces", "cup", "cups", "tablespoon", "tablespoons", "teaspoon", "teaspoons", "ml", "liter", "liters"]
     
@@ -33,6 +35,37 @@ struct AddIngredientView: View {
                         Button(action: { showingVoiceInput = true }) {
                             Image(systemName: "mic.fill")
                                 .foregroundColor(.blue)
+                        }
+                    }
+                    
+                    // Ingredient Image
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Ingredient Photo (Optional)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        Button(action: { showingImagePicker = true }) {
+                            if let image = ingredientImage {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(height: 120)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                    )
+                            } else {
+                                HStack {
+                                    Image(systemName: "camera.fill")
+                                    Text("Add Photo")
+                                }
+                                .foregroundColor(.blue)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(12)
+                            }
                         }
                     }
                     
@@ -94,6 +127,9 @@ struct AddIngredientView: View {
             .sheet(isPresented: $showingVoiceInput) {
                 VoiceInputView(text: $name)
             }
+            .sheet(isPresented: $showingImagePicker) {
+                ImagePicker(image: $ingredientImage, sourceType: .photoLibrary)
+            }
         }
     }
     
@@ -106,6 +142,11 @@ struct AddIngredientView: View {
             expiryDate: hasExpiryDate ? expiryDate : nil,
             notes: notes.isEmpty ? nil : notes
         )
+        
+        // Save image data if available
+        if let image = ingredientImage, let imageData = image.jpegData(compressionQuality: 0.8) {
+            ingredient.imageData = imageData
+        }
         
         modelContext.insert(ingredient)
         dismiss()

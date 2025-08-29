@@ -111,6 +111,10 @@ struct PantryView: View {
                     List {
                         ForEach(filteredIngredients) { ingredient in
                             IngredientRowView(ingredient: ingredient)
+                                .onTapGesture {
+                                    // Open edit sheet on tap
+                                    // We'll handle this in the IngredientRowView
+                                }
                         }
                         .onDelete(perform: deleteIngredients)
                     }

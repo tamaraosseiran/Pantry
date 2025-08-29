@@ -19,6 +19,8 @@ struct EditIngredientView: View {
     @State private var expiryDate: Date
     @State private var hasExpiryDate: Bool
     @State private var notes: String
+    @State private var showingImagePicker = false
+    @State private var ingredientImage: UIImage?
     
     private let units = ["piece", "pieces", "gram", "grams", "kg", "ounce", "ounces", "cup", "cups", "tablespoon", "tablespoons", "teaspoon", "teaspoons", "ml", "liter", "liters"]
     
@@ -31,6 +33,11 @@ struct EditIngredientView: View {
         self._expiryDate = State(initialValue: ingredient.expiryDate ?? Date().addingTimeInterval(86400 * 7))
         self._hasExpiryDate = State(initialValue: ingredient.expiryDate != nil)
         self._notes = State(initialValue: ingredient.notes ?? "")
+        
+        // Load existing image if available
+        if let imageData = ingredient.imageData {
+            self._ingredientImage = State(initialValue: UIImage(data: imageData))
+        }
     }
     
     var body: some View {
@@ -38,6 +45,37 @@ struct EditIngredientView: View {
             Form {
                 Section("Ingredient Details") {
                     TextField("Ingredient name", text: $name)
+                    
+                    // Ingredient Image
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Ingredient Photo")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        Button(action: { showingImagePicker = true }) {
+                            if let image = ingredientImage {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(height: 120)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                    )
+                            } else {
+                                HStack {
+                                    Image(systemName: "camera.fill")
+                                    Text("Add Photo")
+                                }
+                                .foregroundColor(.blue)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue.opacity(0.1))
+                                .cornerRadius(12)
+                            }
+                        }
+                    }
                     
                     HStack {
                         Text("Quantity")
@@ -111,6 +149,9 @@ struct EditIngredientView: View {
                     .disabled(name.isEmpty)
                 }
             }
+            .sheet(isPresented: $showingImagePicker) {
+                ImagePicker(image: $ingredientImage, sourceType: .photoLibrary)
+            }
         }
     }
     
@@ -121,6 +162,11 @@ struct EditIngredientView: View {
         ingredient.category = category
         ingredient.expiryDate = hasExpiryDate ? expiryDate : nil
         ingredient.notes = notes.isEmpty ? nil : notes
+        
+        // Save image data if available
+        if let image = ingredientImage, let imageData = image.jpegData(compressionQuality: 0.8) {
+            ingredient.imageData = imageData
+        }
         
         dismiss()
     }
