@@ -171,8 +171,8 @@ struct PreferencesView: View {
     private func loadPreferences() {
         guard let prefs = preferences else { return }
         
-        dietaryRestrictions = Set(prefs.dietaryRestrictions)
-        preferredCuisines = Set(prefs.preferredCuisines)
+        dietaryRestrictions = Set(prefs.dietaryRestrictions ?? [])
+        preferredCuisines = Set(prefs.preferredCuisines ?? [])
         maxPrepTime = prefs.maxPrepTime ?? 30
         householdSize = prefs.householdSize
         skillLevel = prefs.skillLevel

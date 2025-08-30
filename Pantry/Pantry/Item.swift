@@ -11,26 +11,27 @@ import SwiftData
 // MARK: - Ingredient Model
 @Model
 final class Ingredient {
-    var id: UUID
-    var name: String
-    var quantity: Double
-    var unit: String
-    var category: IngredientCategory
+    var id: UUID = UUID()
+    var name: String = ""
+    var quantity: Double = 1.0
+    var unit: String = "piece"
+    var category: IngredientCategory = IngredientCategory.other
     var expiryDate: Date?
-    var isUsed: Bool
-    var dateAdded: Date
+    var isUsed: Bool = false
+    var dateAdded: Date = Date()
     var imageData: Data?
     var notes: String?
     
+    // Inverse relationship for recipes that use this ingredient
+    @Relationship(inverse: \RecipeIngredient.ingredient)
+    var recipeIngredients: [RecipeIngredient]?
+    
     init(name: String, quantity: Double = 1.0, unit: String = "piece", category: IngredientCategory = .other, expiryDate: Date? = nil, notes: String? = nil) {
-        self.id = UUID()
         self.name = name
         self.quantity = quantity
         self.unit = unit
         self.category = category
         self.expiryDate = expiryDate
-        self.isUsed = false
-        self.dateAdded = Date()
         self.notes = notes
     }
 }
@@ -38,22 +39,24 @@ final class Ingredient {
 // MARK: - Recipe Model
 @Model
 final class Recipe {
-    var id: UUID
-    var name: String
-    var ingredients: [RecipeIngredient]
-    var instructions: [String]
-    var prepTime: Int // in minutes
-    var cookTime: Int // in minutes
-    var servings: Int
-    var cuisine: CuisineType
-    var difficulty: DifficultyLevel
-    var dietaryTags: [DietaryTag]
+    var id: UUID = UUID()
+    var name: String = ""
+    var instructions: [String]?
+    var prepTime: Int = 0 // in minutes
+    var cookTime: Int = 0 // in minutes
+    var servings: Int = 1
+    var cuisine: CuisineType = CuisineType.other
+    var difficulty: DifficultyLevel = DifficultyLevel.easy
+    var dietaryTags: [DietaryTag]?
     var imageURL: String?
-    var isFavorite: Bool
-    var dateCreated: Date
+    var isFavorite: Bool = false
+    var dateCreated: Date = Date()
+    
+    // Inverse relationship for recipe ingredients
+    @Relationship(inverse: \RecipeIngredient.recipe)
+    var ingredients: [RecipeIngredient]?
     
     init(name: String, ingredients: [RecipeIngredient] = [], instructions: [String] = [], prepTime: Int = 0, cookTime: Int = 0, servings: Int = 1, cuisine: CuisineType = .other, difficulty: DifficultyLevel = .easy, dietaryTags: [DietaryTag] = []) {
-        self.id = UUID()
         self.name = name
         self.ingredients = ingredients
         self.instructions = instructions
@@ -63,22 +66,25 @@ final class Recipe {
         self.cuisine = cuisine
         self.difficulty = difficulty
         self.dietaryTags = dietaryTags
-        self.isFavorite = false
-        self.dateCreated = Date()
     }
 }
 
 // MARK: - Recipe Ingredient Model
 @Model
 final class RecipeIngredient {
-    var id: UUID
-    var name: String
-    var quantity: Double
-    var unit: String
-    var isOptional: Bool
+    var id: UUID = UUID()
+    var name: String = ""
+    var quantity: Double = 0.0
+    var unit: String = ""
+    var isOptional: Bool = false
+    
+    // Relationship to the actual ingredient
+    var ingredient: Ingredient?
+    
+    // Relationship to the recipe
+    var recipe: Recipe?
     
     init(name: String, quantity: Double, unit: String, isOptional: Bool = false) {
-        self.id = UUID()
         self.name = name
         self.quantity = quantity
         self.unit = unit
@@ -89,17 +95,16 @@ final class RecipeIngredient {
 // MARK: - User Preferences Model
 @Model
 final class UserPreferences {
-    var id: UUID
-    var dietaryRestrictions: [DietaryTag]
-    var preferredCuisines: [CuisineType]
+    var id: UUID = UUID()
+    var dietaryRestrictions: [DietaryTag]?
+    var preferredCuisines: [CuisineType]?
     var maxPrepTime: Int? // in minutes
-    var householdSize: Int
-    var skillLevel: DifficultyLevel
-    var notificationsEnabled: Bool
-    var wasteReductionGoal: Int // target percentage
+    var householdSize: Int = 1
+    var skillLevel: DifficultyLevel = DifficultyLevel.easy
+    var notificationsEnabled: Bool = true
+    var wasteReductionGoal: Int = 20 // target percentage
     
     init(dietaryRestrictions: [DietaryTag] = [], preferredCuisines: [CuisineType] = [], maxPrepTime: Int? = nil, householdSize: Int = 1, skillLevel: DifficultyLevel = .easy, notificationsEnabled: Bool = true, wasteReductionGoal: Int = 20) {
-        self.id = UUID()
         self.dietaryRestrictions = dietaryRestrictions
         self.preferredCuisines = preferredCuisines
         self.maxPrepTime = maxPrepTime

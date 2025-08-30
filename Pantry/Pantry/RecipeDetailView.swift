@@ -21,9 +21,9 @@ struct RecipeDetailView: View {
     }
     
     var missingIngredients: [RecipeIngredient] {
-        recipe.ingredients.filter { ingredient in
+        recipe.ingredients?.filter { ingredient in
             !availableIngredients.contains(ingredient.name.lowercased())
-        }
+        } ?? []
     }
     
     var body: some View {
@@ -67,10 +67,10 @@ struct RecipeDetailView: View {
                                 
                                 Spacer()
                                 
-                                if !recipe.dietaryTags.isEmpty {
+                                if let dietaryTags = recipe.dietaryTags, !dietaryTags.isEmpty {
                                     ScrollView(.horizontal, showsIndicators: false) {
                                         HStack(spacing: 8) {
-                                            ForEach(recipe.dietaryTags, id: \.self) { tag in
+                                            ForEach(dietaryTags, id: \.self) { tag in
                                                 Text(tag.rawValue)
                                                     .font(.caption)
                                                     .padding(.horizontal, 8)
@@ -109,11 +109,13 @@ struct RecipeDetailView: View {
                         }
                         
                         VStack(spacing: 8) {
-                            ForEach(recipe.ingredients) { ingredient in
-                                IngredientRow(
-                                    ingredient: ingredient,
-                                    isAvailable: availableIngredients.contains(ingredient.name.lowercased())
-                                )
+                            if let ingredients = recipe.ingredients {
+                                ForEach(ingredients) { ingredient in
+                                    IngredientRow(
+                                        ingredient: ingredient,
+                                        isAvailable: availableIngredients.contains(ingredient.name.lowercased())
+                                    )
+                                }
                             }
                         }
                     }
@@ -125,20 +127,22 @@ struct RecipeDetailView: View {
                             .fontWeight(.semibold)
                         
                         VStack(spacing: 12) {
-                            ForEach(Array(recipe.instructions.enumerated()), id: \.offset) { index, instruction in
-                                HStack(alignment: .top, spacing: 12) {
-                                    Text("\(index + 1)")
-                                        .font(.caption)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.white)
-                                        .frame(width: 20, height: 20)
-                                        .background(Color.blue)
-                                        .clipShape(Circle())
-                                    
-                                    Text(instruction)
-                                        .font(.body)
-                                    
-                                    Spacer()
+                            if let instructions = recipe.instructions {
+                                ForEach(Array(instructions.enumerated()), id: \.offset) { index, instruction in
+                                    HStack(alignment: .top, spacing: 12) {
+                                        Text("\(index + 1)")
+                                            .font(.caption)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.white)
+                                            .frame(width: 20, height: 20)
+                                            .background(Color.blue)
+                                            .clipShape(Circle())
+                                        
+                                        Text(instruction)
+                                            .font(.body)
+                                        
+                                        Spacer()
+                                    }
                                 }
                             }
                         }

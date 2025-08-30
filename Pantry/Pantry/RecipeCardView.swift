@@ -69,10 +69,10 @@ struct RecipeCardView: View {
                     }
                     
                     // Dietary Tags
-                    if !recipe.dietaryTags.isEmpty {
+                    if let dietaryTags = recipe.dietaryTags, !dietaryTags.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 4) {
-                                ForEach(recipe.dietaryTags.prefix(2), id: \.self) { tag in
+                                ForEach(dietaryTags.prefix(2), id: \.self) { tag in
                                     Text(tag.rawValue)
                                         .font(.caption2)
                                         .padding(.horizontal, 6)
@@ -82,8 +82,8 @@ struct RecipeCardView: View {
                                         .cornerRadius(6)
                                 }
                                 
-                                if recipe.dietaryTags.count > 2 {
-                                    Text("+\(recipe.dietaryTags.count - 2)")
+                                if dietaryTags.count > 2 {
+                                    Text("+\(dietaryTags.count - 2)")
                                         .font(.caption2)
                                         .foregroundColor(.secondary)
                                 }

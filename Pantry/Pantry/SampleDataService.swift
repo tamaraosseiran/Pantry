@@ -34,14 +34,7 @@ class SampleDataService {
         let sampleRecipes = [
             Recipe(
                 name: "Pasta Carbonara",
-                ingredients: [
-                    RecipeIngredient(name: "Pasta", quantity: 200, unit: "g"),
-                    RecipeIngredient(name: "Eggs", quantity: 2, unit: "pieces"),
-                    RecipeIngredient(name: "Parmesan", quantity: 50, unit: "g"),
-                    RecipeIngredient(name: "Garlic", quantity: 2, unit: "cloves"),
-                    RecipeIngredient(name: "Olive Oil", quantity: 30, unit: "ml"),
-                    RecipeIngredient(name: "Bacon", quantity: 100, unit: "g", isOptional: true)
-                ],
+                ingredients: [],
                 instructions: [
                     "Bring a large pot of salted water to boil",
                     "Cook pasta according to package directions",
@@ -61,13 +54,7 @@ class SampleDataService {
             
             Recipe(
                 name: "Simple Tomato Sauce",
-                ingredients: [
-                    RecipeIngredient(name: "Tomato", quantity: 4, unit: "pieces"),
-                    RecipeIngredient(name: "Onion", quantity: 1, unit: "piece"),
-                    RecipeIngredient(name: "Garlic", quantity: 3, unit: "cloves"),
-                    RecipeIngredient(name: "Olive Oil", quantity: 30, unit: "ml"),
-                    RecipeIngredient(name: "Basil", quantity: 1, unit: "bunch")
-                ],
+                ingredients: [],
                 instructions: [
                     "Dice tomatoes, onion, and garlic",
                     "Heat olive oil in a large pan over medium heat",
@@ -86,15 +73,7 @@ class SampleDataService {
             
             Recipe(
                 name: "Stir-Fried Chicken with Vegetables",
-                ingredients: [
-                    RecipeIngredient(name: "Chicken Breast", quantity: 400, unit: "g"),
-                    RecipeIngredient(name: "Bell Pepper", quantity: 2, unit: "pieces"),
-                    RecipeIngredient(name: "Onion", quantity: 1, unit: "piece"),
-                    RecipeIngredient(name: "Garlic", quantity: 2, unit: "cloves"),
-                    RecipeIngredient(name: "Mushrooms", quantity: 200, unit: "g"),
-                    RecipeIngredient(name: "Olive Oil", quantity: 30, unit: "ml"),
-                    RecipeIngredient(name: "Soy Sauce", quantity: 60, unit: "ml", isOptional: true)
-                ],
+                ingredients: [],
                 instructions: [
                     "Cut chicken into bite-sized pieces",
                     "Slice bell peppers, onion, and mushrooms",
@@ -114,15 +93,7 @@ class SampleDataService {
             
             Recipe(
                 name: "Mushroom Risotto",
-                ingredients: [
-                    RecipeIngredient(name: "Rice", quantity: 300, unit: "g"),
-                    RecipeIngredient(name: "Mushrooms", quantity: 300, unit: "g"),
-                    RecipeIngredient(name: "Onion", quantity: 1, unit: "piece"),
-                    RecipeIngredient(name: "Garlic", quantity: 2, unit: "cloves"),
-                    RecipeIngredient(name: "Olive Oil", quantity: 30, unit: "ml"),
-                    RecipeIngredient(name: "Parmesan", quantity: 100, unit: "g"),
-                    RecipeIngredient(name: "Vegetable Stock", quantity: 1, unit: "liter", isOptional: true)
-                ],
+                ingredients: [],
                 instructions: [
                     "Sauté chopped onion and garlic in olive oil",
                     "Add mushrooms and cook until golden",
@@ -141,14 +112,7 @@ class SampleDataService {
             
             Recipe(
                 name: "Quick Vegetable Soup",
-                ingredients: [
-                    RecipeIngredient(name: "Tomato", quantity: 2, unit: "pieces"),
-                    RecipeIngredient(name: "Onion", quantity: 1, unit: "piece"),
-                    RecipeIngredient(name: "Garlic", quantity: 2, unit: "cloves"),
-                    RecipeIngredient(name: "Bell Pepper", quantity: 1, unit: "piece"),
-                    RecipeIngredient(name: "Olive Oil", quantity: 15, unit: "ml"),
-                    RecipeIngredient(name: "Vegetable Stock", quantity: 1, unit: "liter", isOptional: true)
-                ],
+                ingredients: [],
                 instructions: [
                     "Dice all vegetables",
                     "Heat oil in a large pot",
