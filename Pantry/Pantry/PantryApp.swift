@@ -24,13 +24,15 @@ struct PantryApp: App {
         
         // Use different configuration for preview vs production
         #if DEBUG
+        // For previews, use a completely separate in-memory configuration
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
         #else
+        // For production, use CloudKit
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false, cloudKitDatabase: .automatic)
         #endif
 
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try ModelContainer(for: schema, configurations: modelConfiguration)
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
