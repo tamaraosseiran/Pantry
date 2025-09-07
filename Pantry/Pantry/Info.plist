@@ -12,5 +12,7 @@
 	<string>Pantry needs photo library access to select ingredient images</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Pantry needs microphone access for voice input when adding ingredients</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
