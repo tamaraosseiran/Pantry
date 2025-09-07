@@ -55,11 +55,13 @@ struct PantryApp: App {
                             }
                         }
                 } else if showingOnboarding {
-                    OnboardingView()
-                        .transition(.opacity)
-                        .onDisappear {
+                    OnboardingView(onComplete: {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            showingOnboarding = false
                             hasSeenOnboarding = true
                         }
+                    })
+                    .transition(.opacity)
                 } else {
                     MainTabView()
                         .transition(.opacity)

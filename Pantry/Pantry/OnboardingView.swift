@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @Environment(\.dismiss) private var dismiss
+    let onComplete: () -> Void
     @State private var currentPage = 0
     
     private let pages = [
@@ -87,7 +87,7 @@ struct OnboardingView: View {
                         
                         Button(currentPage == pages.count - 1 ? "Get Started" : "Next") {
                             if currentPage == pages.count - 1 {
-                                dismiss()
+                                onComplete()
                             } else {
                                 withAnimation {
                                     currentPage += 1
@@ -163,5 +163,5 @@ struct OnboardingPageView: View {
 }
 
 #Preview {
-    OnboardingView()
+    OnboardingView(onComplete: {})
 } 
